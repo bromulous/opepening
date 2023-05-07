@@ -1,25 +1,36 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import { Container, CssBaseline } from "@mui/material";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import Header from "./components/Header";
 
-function App() {
+const light = {
+  palette: {
+    mode: "light",
+  },
+};
+
+const dark = {
+  palette: {
+    mode: "dark",
+  },
+};
+
+const App = () => {
+  const [isDarkTheme, setIsDarkTheme] = useState(false);
+
+  const changeTheme = () => {
+    setIsDarkTheme(!isDarkTheme);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <ThemeProvider theme={isDarkTheme ? createTheme(dark) : createTheme(light)}>
+      <CssBaseline />
+      <Container maxWidth={false}>
+        <Header isDarkTheme={isDarkTheme} changeTheme={changeTheme} />
+        {/* Your other components and content */}
+      </Container>
+    </ThemeProvider>
   );
-}
+};
 
 export default App;
