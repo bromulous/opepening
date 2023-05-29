@@ -1,11 +1,13 @@
-import { Box, Typography, Button, FormGroup, FormControlLabel, Switch } from "@mui/material";
+import { Box, Typography, Button, FormGroup, FormControlLabel, Switch, TextField } from "@mui/material";
+import { useEffect } from "react";
 import styled  from "@emotion/styled";
 import logo from "../assets/img/card_logo.png";
 import logoLight from "../assets/img/logo_light1.png";
 import logoDark from "../assets/img/logo_dark1.png";
 import logoLightL from "../assets/img/logo_light.png";
 import logoDarkL from "../assets/img/logo_dark.png";
-// import packsIcon from "../assets/img/packs_icon.png";
+import { useState } from "react";
+import {useNavigate} from "react-router-dom";
 
 const HeaderContainer = styled(Box)`
   display: flex;
@@ -35,20 +37,44 @@ const RoundedButton = styled(Button)`
   margin-right: 8px;
 `
 
-function Header({ isDarkTheme, changeTheme }) {
+function Header({ isDarkTheme, changeTheme, address, updateAddress }) { // Add address and updateAddress props
   const logo = isDarkTheme ? logoDark : logoLight;
   const logoL = isDarkTheme ? logoDarkL : logoLightL;
+  const [inputAddress, setInputAddress] = useState(address);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setInputAddress(address);
+  }, [address]);
+
+  const handlePacksClick = () => {
+    if (inputAddress) {
+      updateAddress(inputAddress); // Update the address using the callback
+      navigate(`/${inputAddress}/sets/1`);
+    }
+  };
+
   return (
     <HeaderContainer>
       <LogoContainer>
         <LogoImage src={logoL} alt="Logo" />
-        <Typography variant="h6">Opepen Packs</Typography>
+        <Typography variant="h6">Opepening</Typography>
       </LogoContainer>
-      <ButtonContainer>
-        <RoundedButton variant="outlined" startIcon={<img src={logo} alt="Packs" />}>
-          Packs
-        </RoundedButton>
-        <RoundedButton variant="outlined">Connect</RoundedButton>
+        <ButtonContainer>
+        <TextField
+          variant="outlined"
+          label="Enter your address"
+          value={inputAddress}
+          onChange={(e) => setInputAddress(e.target.value)}
+        />
+          <RoundedButton
+            variant="outlined"
+            // startIcon={<img src={logo} alt="Packs" />}
+            onClick={handlePacksClick}
+          >
+            Submit
+          </RoundedButton>
+        
         <FormGroup>
           <FormControlLabel
             control={<Switch checked={isDarkTheme} onChange={changeTheme} />}
