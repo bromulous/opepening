@@ -5,6 +5,7 @@ import logoLight from "../assets/img/logo_light1.png";
 import logoDark from "../assets/img/logo_dark1.png";
 import logoLightL from "../assets/img/logo_light.png";
 import logoDarkL from "../assets/img/logo_dark.png";
+import cl from "../assets/img/cl3.png";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import debounce from "lodash.debounce";
@@ -23,7 +24,7 @@ const LogoContainer = styled(Box)`
 
 const LogoImage = styled("img")`
   width: 32px;
-  height: 32px;
+  height: auto;
   margin-right: 8px;
 `;
 
@@ -69,7 +70,7 @@ function Header({ isDarkTheme, changeTheme, address, updateAddress }) {
   return (
     <HeaderContainer>
       <LogoContainer>
-        <LogoImage src={logoL} alt="Logo" />
+        <LogoImage src={cl} alt="Logo" />
         <Typography variant="h6">Opepening</Typography>
       </LogoContainer>
       <ButtonContainer>
