@@ -277,7 +277,7 @@ const PackReveal = ({ revealedMetadata, submittedCount, isPackRevealed }) => {
                                     }}
                                 >
                                     <Card
-                                        frontImage={`${entry.image.cdn}/${entry.image.path}/${entry.image.uuid}.${entry.image.type}.sm`}
+                                        frontImage={`${entry.image.cdn}/${entry.image.path}/${entry.image.uuid}@sm.${entry.image.type}`}
                                         backImage={lightCardBack}
                                         isFlipped={flippedCards.includes(index)}
                                         onClick={() => handleCardClick(index)}

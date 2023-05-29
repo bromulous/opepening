@@ -195,7 +195,7 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
                                 <CardMedia
                                     component="img"
                                     height="140"
-                                    image={`${images[key].cdn}/${images[key].path}/${images[key].uuid}.${images[key].type}`}
+                                    image={`${images[key].cdn}/${images[key].path}/${images[key].uuid}${images[key].type !== 'gif'? '@sm': ""}.${images[key].type}`}
                                     alt={`Set ${key} image`}
                                 />
                             )}
