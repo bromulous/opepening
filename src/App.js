@@ -6,6 +6,7 @@ import {
   BrowserRouter,
   Navigate,
   useNavigate,
+  useParams,
 } from "react-router-dom";
 import { Container, CssBaseline } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -41,6 +42,24 @@ const App = () => {
     setSetNumber(newSetNumber);
   };
 
+  const SetsPageWrapper = () => {
+    const { address: urlAddress } = useParams();
+    useEffect(() => {
+      if (urlAddress) {
+        setAddress(urlAddress);
+      }
+    }, [urlAddress]);
+
+    return (
+      <SetsPage
+        address={address}
+        onAddressSubmit={updateAddress}
+        setNumber={setNumber}
+        updateSetNumber={updateSetNumber}
+      />
+    );
+  };
+
   return (
     <ThemeProvider
       theme={isDarkTheme ? createTheme(dark) : createTheme(light)}
@@ -61,18 +80,11 @@ const App = () => {
             />
             <Route
               path="/sets/:setNumber"
-              element={<SetsPage address={address} onAddressSubmit={updateAddress} setNumber={setNumber} updateSetNumber={updateSetNumber} />}
+              element={<SetsPageWrapper />}
             />
             <Route
               path="/:address/sets/:setNumber"
-              element={
-                <SetsPage
-                  address={address}
-                  onAddressSubmit={updateAddress}
-                  setNumber={setNumber}
-                  updateSetNumber={updateSetNumber}
-                />
-              }
+              element={<SetsPageWrapper />}
             />
           </Routes>
         </Container>

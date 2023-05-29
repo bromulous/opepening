@@ -68,6 +68,11 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
         setOpenModal(false);
     };
 
+    const getSmallestImageUrl = (image) => {
+        const version = image.versions.sm ? "@sm" : "";
+        return `${image.cdn}/${image.path}/${image.uuid}${version}.${image.type}`;
+    };
+
     useEffect(() => {
         let theseCachedSets = cachedSets;
         if (address !== previousAddress) {
@@ -195,7 +200,7 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
                                 <CardMedia
                                     component="img"
                                     height="140"
-                                    image={`${images[key].cdn}/${images[key].path}/${images[key].uuid}${images[key].type !== 'gif'? '@sm': ""}.${images[key].type}`}
+                                    image={getSmallestImageUrl(images[key])}
                                     alt={`Set ${key} image`}
                                 />
                             )}
