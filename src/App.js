@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  BrowserRouter,
-  Navigate,
-  useNavigate,
-  useParams,
+    BrowserRouter as Router,
+    Route,
+    Routes,
+    BrowserRouter,
+    Navigate,
+    useNavigate,
+    useParams,
 } from "react-router-dom";
 import { Container, CssBaseline } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -14,83 +14,107 @@ import Header from "./components/Header";
 import SetsPage from "./pages/SetsPage";
 
 const light = {
-  palette: {
-    mode: "light",
-  },
+    palette: {
+        mode: "light",
+    },
 };
 
 const dark = {
-  palette: {
-    mode: "dark",
-  },
+    palette: {
+        mode: "dark",
+    },
 };
 
 const App = () => {
-  const [isDarkTheme, setIsDarkTheme] = useState(true);
-  const [address, setAddress] = useState("");
-  const [setNumber, setSetNumber] = useState(1);
+    const [isDarkTheme, setIsDarkTheme] = useState(true);
+    const [address, setAddress] = useState("");
+    const [setNumber, setSetNumber] = useState(1);
 
-  const changeTheme = () => {
-    setIsDarkTheme(!isDarkTheme);
-  };
+    const changeTheme = () => {
+        setIsDarkTheme(!isDarkTheme);
+    };
 
-  const updateAddress = (newAddress) => {
-    setAddress(newAddress);
-  };
+    const updateAddress = (newAddress) => {
+        console.log("updated address: ", newAddress);
+        setAddress(newAddress);
+    };
 
-  const updateSetNumber = (newSetNumber) => {
-    setSetNumber(newSetNumber);
-  };
+    const updateSetNumber = (newSetNumber) => {
+        console.log("updated set number: ", newSetNumber);
+        setSetNumber(newSetNumber);
+    };
 
-  const SetsPageWrapper = () => {
-    const { address: urlAddress } = useParams();
-    useEffect(() => {
-      if (urlAddress) {
-        setAddress(urlAddress);
-      }
-    }, [urlAddress]);
+    const SetsPageWrapper = () => {
+        const { address: urlAddress, setNumber: urlSetNumber } = useParams();
+        const navigate = useNavigate();
+
+        useEffect(() => {
+            if (urlAddress) {
+                setAddress(urlAddress);
+            }
+        }, [urlAddress]);
+
+        useEffect(() => {
+            if (urlSetNumber && parseInt(urlSetNumber) !== setNumber) {
+                updateSetNumber(parseInt(urlSetNumber));
+            }
+        }, [urlSetNumber]);
+
+        const handleAddressSubmit = (newAddress) => {
+            updateAddress(newAddress);
+            navigate(`/${newAddress}/sets/${setNumber}`);
+        };
+
+        const handleSetUpdate = (newSetNumber) => {
+            updateSetNumber(newSetNumber);
+            if (address) {
+                navigate(`/${address}/sets/${newSetNumber}`);
+            } else {
+                navigate(`/sets/${newSetNumber}`);
+            }
+        };
+
+        return (
+            <SetsPage
+                address={address}
+                onAddressSubmit={handleAddressSubmit}
+                setNumber={setNumber}
+                updateSetNumber={handleSetUpdate}
+            />
+        );
+    };
 
     return (
-      <SetsPage
-        address={address}
-        onAddressSubmit={updateAddress}
-        setNumber={setNumber}
-        updateSetNumber={updateSetNumber}
-      />
+        <ThemeProvider
+            theme={isDarkTheme ? createTheme(dark) : createTheme(light)}
+        >
+            <CssBaseline />
+            <BrowserRouter>
+                <Container maxWidth={false}>
+                    <Header
+                        isDarkTheme={isDarkTheme}
+                        changeTheme={changeTheme}
+                        address={address}
+                        updateAddress={updateAddress}
+                    />
+                    <Routes>
+                        <Route
+                            path="/"
+                            element={<Navigate to={`/sets/${setNumber}`} />}
+                        />
+                        <Route
+                            path="/sets/:setNumber"
+                            element={<SetsPageWrapper />}
+                        />
+                        <Route
+                            path="/:address/sets/:setNumber"
+                            element={<SetsPageWrapper />}
+                        />
+                    </Routes>
+                </Container>
+            </BrowserRouter>
+        </ThemeProvider>
     );
-  };
-
-  return (
-    <ThemeProvider
-      theme={isDarkTheme ? createTheme(dark) : createTheme(light)}
-    >
-      <CssBaseline />
-      <BrowserRouter>
-        <Container maxWidth={false}>
-          <Header
-            isDarkTheme={isDarkTheme}
-            changeTheme={changeTheme}
-            address={address}
-            updateAddress={updateAddress}
-          />
-          <Routes>
-            <Route
-              path="/"
-              element={<Navigate to={`/sets/${setNumber}`} />}
-            />
-            <Route
-              path="/sets/:setNumber"
-              element={<SetsPageWrapper />}
-            />
-            <Route
-              path="/:address/sets/:setNumber"
-              element={<SetsPageWrapper />}
-            />
-          </Routes>
-        </Container>
-      </BrowserRouter>
-    </ThemeProvider>
-  );
 };
 
 export default App;

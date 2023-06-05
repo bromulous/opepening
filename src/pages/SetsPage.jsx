@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import SetsNavigator from "../components/SetsNavigator";
 import PackReveal from "../components/PackReveal";
@@ -35,16 +36,6 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
     const [showAddressModal, setShowAddressModal] = useState(false);
     const [inputAddress, setInputAddress] = useState("");
     const [isPackRevealed, setIsPackRevealed] = useState(false);
-    // const [isPackRevealed, setIsPackRevealed] = useState(false);
-
-    useEffect(() => {
-        if (setAddress) {
-            onAddressSubmit(setAddress);
-        }
-        if (setSetNumber) {
-            updateSetNumber(setSetNumber);
-        }
-    }, [setAddress, setSetNumber, onAddressSubmit, updateSetNumber]);
 
     const handleOpenModal = (set, key, submittedCount) => {
         if (!address) {
@@ -87,12 +78,15 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
             const setNameData = await setNameResponse.json();
             const setName = setNameData.name;
 
-            const opepenIdsResponse = await fetch(
-                `https://api.opepen.art/v1/accounts/${address}/sets/${setNumber}`
-            );
+            let opepenIdsResponse = null;
+            if (address) {
+                opepenIdsResponse = await fetch(
+                    `https://api.opepen.art/v1/accounts/${address}/sets/${setNumber}`
+                );
+            }
 
             let opepenIds = [];
-            if (opepenIdsResponse.ok) {
+            if (opepenIdsResponse && opepenIdsResponse.ok) {
                 const opepenIdsData = await opepenIdsResponse.json();
                 opepenIds = opepenIdsData.opepen_ids;
             }
