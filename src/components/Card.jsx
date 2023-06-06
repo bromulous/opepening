@@ -47,7 +47,6 @@ const Card = forwardRef(
                     >
                         <img
                             src={backImage}
-                            alt="Card Back"
                             style={{
                                 width: "100%",
                                 height: "100%",
