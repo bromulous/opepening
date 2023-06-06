@@ -83,12 +83,12 @@ function Header({ isDarkTheme, changeTheme, address, updateAddress }) {
             placeholder="Enter your address"
           />
         </Box>
-        <FormGroup>
+        {/* <FormGroup>
           <FormControlLabel
             control={<Switch checked={isDarkTheme} onChange={changeTheme} />}
             label="Dark Theme"
           />
-        </FormGroup>
+        </FormGroup> */}
       </ButtonContainer>
     </HeaderContainer>
   );
