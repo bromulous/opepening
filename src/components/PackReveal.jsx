@@ -182,7 +182,7 @@ const PackReveal = ({ revealedMetadata, submittedCount, isPackRevealed }) => {
             {flippedCards.map((index) => (
                 <CardConfetti key={index} show={flippedCards.includes(index)} />
             ))}
-    
+
             <div
                 style={{
                     display: "flex",
@@ -213,7 +213,11 @@ const PackReveal = ({ revealedMetadata, submittedCount, isPackRevealed }) => {
                         >
                             {showPackImage && (
                                 <animated.img
-                                    src={submittedCount > 0 && !isPackRevealed ? unreleasedPack : opepenPackShadow}
+                                    src={
+                                        submittedCount > 0 && !isPackRevealed
+                                            ? unreleasedPack
+                                            : opepenPackShadow
+                                    }
                                     alt="Opepen Pack"
                                     onClick={handlePackImageClick}
                                     style={{
@@ -230,7 +234,7 @@ const PackReveal = ({ revealedMetadata, submittedCount, isPackRevealed }) => {
                     )}
                     {packStatus === "opened" && <h3>Pack Empty</h3>}
                 </div>
-    
+
                 <div
                     style={{
                         position: "relative",
@@ -259,18 +263,26 @@ const PackReveal = ({ revealedMetadata, submittedCount, isPackRevealed }) => {
                                     style={{
                                         ...cardMovementAnimation[index],
                                         position: "relative",
-                                        zIndex:
-                                            revealedMetadata.length - index, // Set zIndex in descending order
+                                        zIndex: revealedMetadata.length - index,
                                         margin: "0.5rem",
                                     }}
                                 >
                                     <Card
-                                        frontImage={`${entry.image.cdn}/${entry.image.path}/${entry.image.uuid}@sm.${entry.image.type}`}
+                                        frontImage={
+                                            entry.image.cdn &&
+                                            entry.image.path &&
+                                            entry.image.uuid &&
+                                            entry.image.type
+                                                ? `${entry.image.cdn}/${entry.image.path}/${entry.image.uuid}@sm.${entry.image.type}`
+                                                : "https://example.com/invalid-image-url"
+                                        }
                                         backImage={lightCardBack}
                                         isFlipped={flippedCards.includes(index)}
                                         onClick={() => handleCardClick(index)}
                                         canFlip={true}
-                                        cardId={revealedMetadata[index].token_id}
+                                        cardId={
+                                            revealedMetadata[index].token_id
+                                        }
                                     />
                                 </animated.div>
                             ))}
