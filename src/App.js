@@ -96,6 +96,7 @@ const App = () => {
                         changeTheme={changeTheme}
                         address={address}
                         updateAddress={updateAddress}
+                        setNumber={setNumber}
                     />
                     <Routes>
                         <Route

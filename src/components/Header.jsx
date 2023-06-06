@@ -47,7 +47,7 @@ const RoundedTextField = styled(TextField)`
   }
 `;
 
-function Header({ isDarkTheme, changeTheme, address, updateAddress }) {
+function Header({ isDarkTheme, changeTheme, address, updateAddress, setNumber }) {
   const logo = isDarkTheme ? logoDark : logoLight;
   const logoL = isDarkTheme ? logoDarkL : logoLightL;
   const [inputAddress, setInputAddress] = useState(address);
@@ -59,7 +59,7 @@ function Header({ isDarkTheme, changeTheme, address, updateAddress }) {
 
   const debouncedUpdateAddress = debounce((inputAddress) => {
     updateAddress(inputAddress);
-    navigate(`/${inputAddress}/sets/1`);
+    navigate(`/${inputAddress}/sets/${setNumber}`);
   }, 500);
 
   const handleAddressChange = (e) => {
