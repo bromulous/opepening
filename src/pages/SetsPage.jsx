@@ -219,7 +219,6 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
                 maxWidth="md"
                 fullWidth
             >
-                <DialogTitle>Open Pack</DialogTitle>
                 <DialogContent>
                     <PackReveal
                         revealedMetadata={revealedMetadata}
@@ -227,11 +226,6 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
                         isPackRevealed={isPackRevealed}
                     />
                 </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCloseModal} color="primary">
-                        Close
-                    </Button>
-                </DialogActions>
             </Dialog>
             <Dialog
                 open={showAddressModal}
