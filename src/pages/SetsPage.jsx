@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import SetsNavigator from "../components/SetsNavigator";
 import PackReveal from "../components/PackReveal";
+import { Backdrop, CircularProgress } from "@mui/material";
 import {
     Card,
     CardContent,
@@ -36,6 +37,8 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
     const [showAddressModal, setShowAddressModal] = useState(false);
     const [inputAddress, setInputAddress] = useState("");
     const [isPackRevealed, setIsPackRevealed] = useState(false);
+    const [imageLoading, setImageLoading] = useState(true);
+    const [dataLoading, setDataLoading] = useState(true);
 
     const handleOpenModal = (set, key, submittedCount) => {
         if (!address) {
@@ -169,10 +172,36 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
             setSubmittedOpepenCount(cachedSets[setNumber].submittedOpepenCount);
             setImages(cachedSets[setNumber].images);
             setIsPackRevealed(cachedSets[setNumber].isPackRevealed);
+            setDataLoading(false);
         } else {
-            fetchSetNameAndOpepenIds();
+            fetchSetNameAndOpepenIds().then(() => setDataLoading(false));
         }
     }, [setNumber, cachedSets, address]);
+
+    const LoadingCard = () => (
+        <Card>
+            <CardMedia
+                component="div"
+                height="140"
+                sx={{
+                    backgroundColor: "rgba(0, 0, 0, 0.1)",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}
+            >
+                <CircularProgress />
+            </CardMedia>
+            <CardContent>
+                <Typography variant="h6" color="text.secondary">
+                    Loading...
+                </Typography>
+                <Typography variant="subtitle1" color="text.secondary">
+                    Set
+                </Typography>
+            </CardContent>
+        </Card>
+    );
 
     return (
         <div>
@@ -183,34 +212,48 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
                 updateSetNumber={updateSetNumber}
             />
             <Grid container justifyContent="center" spacing={2}>
-                {Object.entries(submittedOpepenCount).map(([key, value]) => (
-                    <Grid item key={key}>
-                        <Card
-                            onClick={() =>
-                                handleOpenModal(setNumber, key, value.submitted)
-                            }
-                        >
-                            {images[key] && (
-                                <CardMedia
-                                    component="img"
-                                    height="140"
-                                    image={getSmallestImageUrl(images[key])}
-                                    alt={`Set ${key} image`}
-                                />
-                            )}
-                            <CardContent>
-                                <Typography variant="h6">
-                                    {!address
-                                        ? `${value.total} opepens subscribed`
-                                        : `${value.submitted} submitted out of ${value.total}`}
-                                </Typography>
-                                <Typography variant="subtitle1">
-                                    Set {key}
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                ))}
+                {dataLoading
+                    ? Array.from({ length: 6 }, (_, i) => (
+                          <Grid item key={i}>
+                              <LoadingCard />
+                          </Grid>
+                      ))
+                    : Object.entries(submittedOpepenCount).map(
+                          ([key, value]) => (
+                              <Grid item key={key}>
+                                  <Card
+                                      onClick={() =>
+                                          handleOpenModal(
+                                              setNumber,
+                                              key,
+                                              value.submitted
+                                          )
+                                      }
+                                  >
+                                      {images[key] && (
+                                          <CardMedia
+                                              component="img"
+                                              height="140"
+                                              image={getSmallestImageUrl(
+                                                  images[key]
+                                              )}
+                                              alt={`Set ${key} image`}
+                                          />
+                                      )}
+                                      <CardContent>
+                                          <Typography variant="h6">
+                                              {!address
+                                                  ? `${value.total} opepens subscribed`
+                                                  : `${value.submitted} submitted out of ${value.total}`}
+                                          </Typography>
+                                          <Typography variant="subtitle1">
+                                              Set {key}
+                                          </Typography>
+                                      </CardContent>
+                                  </Card>
+                              </Grid>
+                          )
+                      )}
             </Grid>
             {/* Your other component JSX */}
             <Dialog
