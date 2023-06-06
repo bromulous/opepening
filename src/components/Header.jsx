@@ -59,7 +59,11 @@ function Header({ isDarkTheme, changeTheme, address, updateAddress, setNumber })
 
   const debouncedUpdateAddress = debounce((inputAddress) => {
     updateAddress(inputAddress);
-    navigate(`/${inputAddress}/sets/${setNumber}`);
+    if(inputAddress === "") {
+      navigate(`sets/${setNumber}`);
+    } else {
+      navigate(`/${inputAddress}/sets/${setNumber}`);
+    }
   }, 500);
 
   const handleAddressChange = (e) => {
