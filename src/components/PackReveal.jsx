@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Confetti from "react-confetti";
 import opepenPackShadow from "../assets/img/opepen-pack-shadow.png";
+import unreleasedPack from "../assets/img/unreleased_pack.png";
 import lightCardBack from "../assets/img/light-card-back.png";
 import { useSpring, animated, useTransition } from "react-spring";
 import { Typography } from "@mui/material";
@@ -131,7 +132,12 @@ const PackReveal = ({ revealedMetadata, submittedCount, isPackRevealed }) => {
     });
 
     const handlePackImageClick = () => {
-        if (!isAnimating && isPackRevealed) {
+        if (!isAnimating && !isPackRevealed) {
+            setIsAnimating(true);
+            setTimeout(() => {
+                setIsAnimating(false);
+            }, 1000); // Wait for the shake animation to complete
+        } else if (!isAnimating && isPackRevealed) {
             setIsAnimating(true);
             setTimeout(() => {
                 setIsAnimating(false);
@@ -205,27 +211,9 @@ const PackReveal = ({ revealedMetadata, submittedCount, isPackRevealed }) => {
                                 position: "relative",
                             }}
                         >
-                            {submittedCount > 0 && !isPackRevealed && showPackImage && (
-                                <Typography
-                                    variant="h5"
-                                    style={{
-                                        zIndex: 2,
-                                        position: "absolute",
-                                        top: "70%",
-                                        left: "50%",
-                                        transform: "translate(-50%, -50%)",
-                                        // backgroundColor: "rgba(255, 255, 255, 0.8)",
-                                        // padding: "0.5rem",
-                                        // borderRadius: "0.25rem",
-                                        textAlign: "center",
-                                    }}
-                                >
-                                    Pack not released yet
-                                </Typography>
-                            )}
                             {showPackImage && (
                                 <animated.img
-                                    src={opepenPackShadow}
+                                    src={submittedCount > 0 && !isPackRevealed ? unreleasedPack : opepenPackShadow}
                                     alt="Opepen Pack"
                                     onClick={handlePackImageClick}
                                     style={{
