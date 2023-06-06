@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Confetti from "react-confetti";
 import opepenPackShadow from "../assets/img/opepen-pack-shadow.png";
-import unreleasedPack from "../assets/img/unreleased_pack.png";
+import unreleasedPack from "../assets/img/unreleased_pack2.png";
 import lightCardBack from "../assets/img/light-card-back.png";
 import { useSpring, animated, useTransition } from "react-spring";
 import { Typography } from "@mui/material";
