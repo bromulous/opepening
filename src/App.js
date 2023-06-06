@@ -12,6 +12,7 @@ import { Container, CssBaseline } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Header from "./components/Header";
 import SetsPage from "./pages/SetsPage";
+import { CachedSetsProvider } from "./components/CachedSetsContext";
 
 const light = {
     palette: {
@@ -35,12 +36,14 @@ const App = () => {
     };
 
     const updateAddress = (newAddress) => {
-        console.log("updated address: ", newAddress);
-        setAddress(newAddress);
+        // console.log("updated address: ", newAddress);
+        if (newAddress ==! address) {
+            setAddress(newAddress); 
+        }
     };
 
     const updateSetNumber = (newSetNumber) => {
-        console.log("updated set number: ", newSetNumber);
+        // console.log("updated set number: ", newSetNumber);
         setSetNumber(newSetNumber);
     };
 
@@ -61,6 +64,9 @@ const App = () => {
         }, [urlSetNumber]);
 
         const handleAddressSubmit = (newAddress) => {
+            if (newAddress === address) {
+                return;
+            }
             updateAddress(newAddress);
             navigate(`/${newAddress}/sets/${setNumber}`);
         };
@@ -88,6 +94,7 @@ const App = () => {
         <ThemeProvider
             theme={isDarkTheme ? createTheme(dark) : createTheme(light)}
         >
+            <CachedSetsProvider address={address}>
             <CssBaseline />
             <BrowserRouter>
                 <Container maxWidth={false}>
@@ -114,6 +121,7 @@ const App = () => {
                     </Routes>
                 </Container>
             </BrowserRouter>
+            </CachedSetsProvider>
         </ThemeProvider>
     );
 };

@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import SetsNavigator from "../components/SetsNavigator";
 import PackReveal from "../components/PackReveal";
 import { Backdrop, CircularProgress } from "@mui/material";
+import { useCachedSets } from "../components/CachedSetsContext";
 import {
     Card,
     CardContent,
@@ -19,10 +20,8 @@ import {
 } from "@mui/material";
 
 const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
-    const { setAddress, setSetNumber } = useParams();
-    const actualSetNumber = setNumber || setSetNumber;
     const [setName, setSetName] = useState("");
-    const [cachedSets, setCachedSets] = useState({});
+    const { cachedSets, setCachedSets, address:contextAddress } = useCachedSets();
     const [opepenIds, setOpepenIds] = useState([]);
     const [submittedOpepenCount, setSubmittedOpepenCount] = useState({});
     const [images, setImages] = useState({});
@@ -33,7 +32,7 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
     const [cachedRevealedMetadata, setCachedRevealedMetadata] = useState({});
     const imageCache = useRef({});
     const [submittedCount, setSubmittedCount] = useState(0);
-    const [previousAddress, setPreviousAddress] = useState(null);
+    const [previousAddress, setPreviousAddress] = useState('');
     const [showAddressModal, setShowAddressModal] = useState(false);
     const [inputAddress, setInputAddress] = useState("");
     const [isPackRevealed, setIsPackRevealed] = useState(false);
@@ -68,12 +67,19 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
     };
 
     useEffect(() => {
-        let theseCachedSets = cachedSets;
-        if (address !== previousAddress) {
+        const resetCachedSets = () => {
             setCachedSets({});
-            setPreviousAddress(address);
-            theseCachedSets = {};
+        };
+
+        if (contextAddress !== address) {
+            resetCachedSets();
         }
+    }, [contextAddress, address]);
+    
+    
+
+
+    useEffect(() => {
         const fetchSetNameAndOpepenIds = async () => {
             const setNameResponse = await fetch(
                 `https://api.opepen.art/v1/opepen/sets/${setNumber}`
@@ -165,7 +171,7 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
             setSubmittedOpepenCount(submittedOpepenCount);
         };
 
-        if (theseCachedSets[setNumber]) {
+        if (cachedSets[setNumber]) {
             // Use the cached data
             setSetName(cachedSets[setNumber].setName);
             setOpepenIds(cachedSets[setNumber].opepenIds);
@@ -176,7 +182,7 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
         } else {
             fetchSetNameAndOpepenIds().then(() => setDataLoading(false));
         }
-    }, [setNumber, cachedSets, address]);
+    }, [setNumber, contextAddress]);
 
     const LoadingCard = () => (
         <Card>
