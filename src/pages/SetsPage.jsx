@@ -29,7 +29,6 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
     const [openModal, setOpenModal] = useState(false);
     const [cachedMetadata, setCachedMetadata] = useState({});
     const [revealedMetadata, setRevealedMetadata] = useState([]);
-    const [cachedRevealedMetadata, setCachedRevealedMetadata] = useState({});
     const imageCache = useRef({});
     const [submittedCount, setSubmittedCount] = useState(0);
     const [previousAddress, setPreviousAddress] = useState('');
@@ -43,7 +42,7 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
         if (!address) {
             setShowAddressModal(true);
         } else {
-            const revealed = cachedRevealedMetadata[set][key] || [];
+            const revealed = cachedSets[setNumber]?.revealedMetadata?.[key] || [];
             console.log(revealed);
             console.log(key);
             setRevealedMetadata(revealed);
@@ -75,8 +74,7 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
             resetCachedSets();
         }
     }, [contextAddress, address]);
-    
-    
+        
 
 
     useEffect(() => {
@@ -148,40 +146,48 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
                 },
                 {}
             );
-            setCachedRevealedMetadata((prevMetadata) => ({
-                ...prevMetadata,
-                [setNumber]: {
-                    ...prevMetadata[setNumber],
-                    ...metadataByGroup,
-                },
-            }));
 
             // Cache the data
-            setCachedSets((prevSets) => ({
-                ...prevSets,
-                [setNumber]: {
-                    setName,
-                    opepenIds,
-                    submittedOpepenCount,
-                    images,
-                    isPackRevealed: metadataData.length > 0,
-                },
-            }));
+            setCachedSets((prevSets) => {
+                const shouldResetRevealedMetadata =
+                    prevSets[setNumber]?.address !== contextAddress;
+            
+                return {
+                    ...prevSets,
+                    [setNumber]: {
+                        setName,
+                        opepenIds,
+                        submittedOpepenCount,
+                        images,
+                        isPackRevealed: metadataData.length > 0,
+                        revealedMetadata: shouldResetRevealedMetadata
+                            ? metadataByGroup
+                            : {
+                                  ...prevSets[setNumber]?.revealedMetadata,
+                                  ...metadataByGroup,
+                              },
+                        address: contextAddress,
+                    },
+                };
+            });
 
             setSubmittedOpepenCount(submittedOpepenCount);
         };
 
-        if (cachedSets[setNumber]) {
-            // Use the cached data
-            setSetName(cachedSets[setNumber].setName);
-            setOpepenIds(cachedSets[setNumber].opepenIds);
-            setSubmittedOpepenCount(cachedSets[setNumber].submittedOpepenCount);
-            setImages(cachedSets[setNumber].images);
-            setIsPackRevealed(cachedSets[setNumber].isPackRevealed);
-            setDataLoading(false);
-        } else {
-            fetchSetNameAndOpepenIds().then(() => setDataLoading(false));
-        }
+        const shouldRefetchData =
+        !cachedSets[setNumber] || cachedSets[setNumber]?.address !== contextAddress;
+
+    if (shouldRefetchData) {
+        fetchSetNameAndOpepenIds().then(() => setDataLoading(false));
+    } else {
+        // Use the cached data
+        setSetName(cachedSets[setNumber].setName);
+        setOpepenIds(cachedSets[setNumber].opepenIds);
+        setSubmittedOpepenCount(cachedSets[setNumber].submittedOpepenCount);
+        setImages(cachedSets[setNumber].images);
+        setIsPackRevealed(cachedSets[setNumber].isPackRevealed);
+        setDataLoading(false);
+    }
     }, [setNumber, contextAddress]);
 
     const LoadingCard = () => (
