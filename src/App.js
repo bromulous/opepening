@@ -29,7 +29,7 @@ const dark = {
 const App = () => {
     const [isDarkTheme, setIsDarkTheme] = useState(true);
     const [address, setAddress] = useState("");
-    const [setNumber, setSetNumber] = useState(7);
+    const [setNumber, setSetNumber] = useState(8);
 
     const changeTheme = () => {
         setIsDarkTheme(!isDarkTheme);
@@ -37,8 +37,8 @@ const App = () => {
 
     const updateAddress = (newAddress) => {
         // console.log("updated address: ", newAddress);
-        if (newAddress ==! address) {
-            setAddress(newAddress); 
+        if (newAddress == !address) {
+            setAddress(newAddress);
         }
     };
 
@@ -95,32 +95,32 @@ const App = () => {
             theme={isDarkTheme ? createTheme(dark) : createTheme(light)}
         >
             <CachedSetsProvider address={address}>
-            <CssBaseline />
-            <BrowserRouter>
-                <Container maxWidth={false}>
-                    <Header
-                        isDarkTheme={isDarkTheme}
-                        changeTheme={changeTheme}
-                        address={address}
-                        updateAddress={updateAddress}
-                        setNumber={setNumber}
-                    />
-                    <Routes>
-                        <Route
-                            path="/"
-                            element={<Navigate to={`/sets/${setNumber}`} />}
+                <CssBaseline />
+                <BrowserRouter>
+                    <Container maxWidth={false}>
+                        <Header
+                            isDarkTheme={isDarkTheme}
+                            changeTheme={changeTheme}
+                            address={address}
+                            updateAddress={updateAddress}
+                            setNumber={setNumber}
                         />
-                        <Route
-                            path="/sets/:setNumber"
-                            element={<SetsPageWrapper />}
-                        />
-                        <Route
-                            path="/:address/sets/:setNumber"
-                            element={<SetsPageWrapper />}
-                        />
-                    </Routes>
-                </Container>
-            </BrowserRouter>
+                        <Routes>
+                            <Route
+                                path="/"
+                                element={<Navigate to={`/sets/${setNumber}`} />}
+                            />
+                            <Route
+                                path="/sets/:setNumber"
+                                element={<SetsPageWrapper />}
+                            />
+                            <Route
+                                path="/:address/sets/:setNumber"
+                                element={<SetsPageWrapper />}
+                            />
+                        </Routes>
+                    </Container>
+                </BrowserRouter>
             </CachedSetsProvider>
         </ThemeProvider>
     );
