@@ -13,6 +13,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Header from "./components/Header";
 import SetsPage from "./pages/SetsPage";
 import { CachedSetsProvider } from "./components/CachedSetsContext";
+import { CircularProgress } from "@mui/material";
 
 const light = {
     palette: {
@@ -29,7 +30,16 @@ const dark = {
 const App = () => {
     const [isDarkTheme, setIsDarkTheme] = useState(true);
     const [address, setAddress] = useState("");
-    const [setNumber, setSetNumber] = useState(9);
+    const [setNumber, setSetNumber] = useState(null);
+
+    useEffect(() => {
+        fetch("https://api.opepen.art/v1/opepen/sets")
+            .then((response) => response.json())
+            .then((data) => {
+                setSetNumber(data.length);
+            })
+            .catch((error) => console.error("Error:", error));
+    }, []);
 
     const changeTheme = () => {
         setIsDarkTheme(!isDarkTheme);
@@ -89,6 +99,10 @@ const App = () => {
             />
         );
     };
+
+    if (setNumber === null) {
+        return <CircularProgress />;
+    }
 
     return (
         <ThemeProvider
