@@ -29,7 +29,7 @@ const dark = {
 const App = () => {
     const [isDarkTheme, setIsDarkTheme] = useState(true);
     const [address, setAddress] = useState("");
-    const [setNumber, setSetNumber] = useState(8);
+    const [setNumber, setSetNumber] = useState(9);
 
     const changeTheme = () => {
         setIsDarkTheme(!isDarkTheme);
