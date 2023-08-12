@@ -6,6 +6,8 @@ import {
     Switch,
     TextField,
     Button,
+    Menu,
+    MenuItem,
 } from "@mui/material";
 import { useEffect } from "react";
 import styled from "@emotion/styled";
@@ -85,6 +87,17 @@ function Header({
         debouncedUpdateAddress(e.target.value);
     };
 
+    const [anchorEl, setAnchorEl] = useState(null);
+
+    const handleMenuOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleMenuClose = () => {
+        setAnchorEl(null);
+    };
+
+
     return (
         <HeaderContainer>
             <LogoContainer>
@@ -92,14 +105,29 @@ function Header({
                 <Typography variant="h6">Opepening</Typography>
             </LogoContainer>
             <ButtonContainer>
-              <Box marginRight>
-            <a
-                    href="https://www.opepefy.art/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
+            <Box marginRight>
+                    <a
+                        href="https://checkcade.com/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <Button
+                            variant="outlined"
+                            style={{
+                                backgroundColor: "transparent",
+                                color: "white",
+                                boxShadow: "none",
+                                borderColor: "gray",
+                            }}
+                        >
+                            checkade
+                        </Button>
+                    </a>
+                </Box>
+                <Box marginRight>
                     <Button
                         variant="outlined"
+                        onClick={handleMenuOpen}
                         style={{
                             backgroundColor: "transparent",
                             color: "white",
@@ -109,26 +137,49 @@ function Header({
                     >
                         OPEPEFY
                     </Button>
-                </a>
+                    <Menu
+                        anchorEl={anchorEl}
+                        open={Boolean(anchorEl)}
+                        onClose={handleMenuClose}
+                    >
+                        <MenuItem
+                            onClick={handleMenuClose}
+                            component="a"
+                            href="https://www.opepefy.art/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Classic
+                        </MenuItem>
+                        <MenuItem
+                            onClick={handleMenuClose}
+                            component="a"
+                            href="https://twitter.opepefy.art/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Twitter
+                        </MenuItem>
+                    </Menu>
                 </Box>
                 <Box>
-                <a
-                    href="https://opepen.accountant/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    <Button
-                        variant="outlined"
-                        style={{
-                            backgroundColor: "transparent",
-                            color: "white",
-                            boxShadow: "none",
-                            borderColor: "gray",
-                        }}
+                    <a
+                        href="https://opepen.accountant/"
+                        target="_blank"
+                        rel="noopener noreferrer"
                     >
-                        Odds
-                    </Button>
-                </a>
+                        <Button
+                            variant="outlined"
+                            style={{
+                                backgroundColor: "transparent",
+                                color: "white",
+                                boxShadow: "none",
+                                borderColor: "gray",
+                            }}
+                        >
+                            Odds
+                        </Button>
+                    </a>
                 </Box>
                 <Box marginRight={2} marginLeft>
                     <RoundedTextField
