@@ -27,7 +27,7 @@ const CardConfetti = ({ show }) => {
     ) : null;
 };
 
-const PackReveal = ({ revealedMetadata, submittedCount, isPackRevealed }) => {
+const PackReveal = ({ revealedMetadata, submittedCount, isPackRevealed, address }) => {
     const [packStatus, setPackStatus] = useState("closed");
     const [flippedCards, setFlippedCards] = useState([]);
     const [isAnimating, setIsAnimating] = useState(false);
@@ -283,6 +283,8 @@ const PackReveal = ({ revealedMetadata, submittedCount, isPackRevealed }) => {
                                         cardId={
                                             revealedMetadata[index].token_id
                                         }
+                                        address={address}
+                                        currentOwnerAddress={revealedMetadata[index].ownerAccount.address}
                                     />
                                 </animated.div>
                             ))}

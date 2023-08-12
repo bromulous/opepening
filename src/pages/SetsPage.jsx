@@ -292,6 +292,7 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
                         revealedMetadata={revealedMetadata}
                         submittedCount={submittedCount}
                         isPackRevealed={isPackRevealed}
+                        address={address}
                     />
                 </DialogContent>
             </Dialog>

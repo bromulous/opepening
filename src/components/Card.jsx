@@ -4,7 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const Card = forwardRef(
-    ({ frontImage, backImage, isFlipped, onClick, canFlip, cardId }, ref) => {
+    ({ frontImage, backImage, isFlipped, onClick, canFlip, cardId, address, currentOwnerAddress }, ref) => {
         const [imageError, setImageError] = useState(false);
 
         const handleImageError = () => {
@@ -84,6 +84,22 @@ const Card = forwardRef(
                                     objectFit: "contain",
                                 }}
                             />
+                            {/* Conditional rendering for the "Sold" label */}
+                            {address.toLowerCase() !== currentOwnerAddress.toLowerCase() && (
+                                <div style={{
+                                    position: 'absolute',
+                                    bottom: '5%',
+                                    left: '50%',
+                                    transform: 'translate(-50%, 0)',
+                                    backgroundColor: 'rgba(0, 0, 0, 0.5)',  // semi-transparent background
+                                    color: 'white',
+                                    padding: '5px 10px',
+                                    borderRadius: '5px',
+                                    fontWeight: 'bold'
+                                }}>
+                                    Sold
+                                </div>
+                            )}
                         </div>
                     </a>
                 </ReactCardFlip>
