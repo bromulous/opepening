@@ -92,6 +92,26 @@ function Header({
                 <Typography variant="h6">Opepening</Typography>
             </LogoContainer>
             <ButtonContainer>
+              <Box marginRight>
+            <a
+                    href="https://www.opepefy.art/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <Button
+                        variant="outlined"
+                        style={{
+                            backgroundColor: "transparent",
+                            color: "white",
+                            boxShadow: "none",
+                            borderColor: "gray",
+                        }}
+                    >
+                        OPEPEFY
+                    </Button>
+                </a>
+                </Box>
+                <Box>
                 <a
                     href="https://opepen.accountant/"
                     target="_blank"
@@ -109,7 +129,8 @@ function Header({
                         Odds
                     </Button>
                 </a>
-                <Box marginRight={2} marginLeft={2}>
+                </Box>
+                <Box marginRight={2} marginLeft>
                     <RoundedTextField
                         variant="outlined"
                         value={inputAddress}
