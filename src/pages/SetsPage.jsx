@@ -84,24 +84,8 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
             );
             const setNameData = await setNameResponse.json();
             const setName = setNameData.name;
-
-            let opepenIdsResponse = null;
-            if (address) {
-                opepenIdsResponse = await fetch(
-                    `https://api.opepen.art/v1/accounts/${address}/sets/${setNumber}`
-                );
-            }
-
-            let opepenIds = [];
-            if (opepenIdsResponse && opepenIdsResponse.ok) {
-                const opepenIdsData = await opepenIdsResponse.json();
-                opepenIds = opepenIdsData.opepen_ids;
-            }
-
             setSetName(setName);
-            setOpepenIds(opepenIds);
 
-            const submittedOpepen = setNameData.submitted_opepen;
             const images = {
                 1: setNameData.edition1Image,
                 4: setNameData.edition4Image,
@@ -112,40 +96,69 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
             };
             setImages(images);
 
-            const submittedOpepenCount = Object.entries(submittedOpepen).reduce(
+
+            /*
+            demand = {
+                "1": 100,
+                "4": 100,
+                "5": 100,
+                "10": 100,
+                "20": 100,
+                "40": 100,
+                total: 600
+            }
+            */
+            // This is total amount submitted from everyone
+            const demand = setNameData.submission_stats.demand;
+
+
+            let opepenIdsResponse = null;
+            if (address) {
+                opepenIdsResponse = await fetch(
+                    `https://api.opepen.art/v1/accounts/${address}/sets/${setNumber}`
+                );
+            }
+
+            let opepenIds = []; // This is a list of opepen ids submitted
+            let max_reveals = {"1":0, "4":0, "5":0, "10":0, "20":0, "40":0, "total":0}; // This is the maximum amount they can receive per set {"set_number": int_amount}
+            if (opepenIdsResponse && opepenIdsResponse.ok) {
+                const opepenIdsData = await opepenIdsResponse.json();
+                opepenIds = opepenIdsData.opepen_ids;
+                max_reveals = opepenIdsData.max_reveals;
+            }
+            setOpepenIds(opepenIds);
+            
+
+            const submittedOpepenCount = Object.entries(demand).reduce(
                 (acc, [key, value]) => {
-                    acc[key] = {
-                        total: value.length,
-                        submitted: value.filter((id) => opepenIds.includes(id))
-                            .length,
-                        ids: value.filter((id) => opepenIds.includes(id)),
-                    };
+                    if (key !== "total") {
+                        acc[key] = {
+                            total: value,
+                            submitted: max_reveals[key],
+                        };
+                    }
                     return acc;
                 },
                 {}
             );
+
 
             const metadataResponse = await fetch(
                 `https://api.opepen.art/v1/opepen/sets/${setNumber}/opepen`
             );
             const metadataData = await metadataResponse.json();
             setIsPackRevealed(metadataData.length > 0);
+            
+            let metadataByGroup = {};
+            metadataData.forEach(item => {
+                if (opepenIds.includes(item.token_id)) {
+                    if (!metadataByGroup[item.data.edition]) {
+                        metadataByGroup[item.data.edition] = [];
+                    }
+                    metadataByGroup[item.data.edition].push(item);
+                }
+            })
 
-            const submittedIdsByGroup = Object.entries(
-                submittedOpepenCount
-            ).reduce((acc, [key, value]) => {
-                acc[key] = value.ids;
-                return acc;
-            }, {});
-            const metadataByGroup = Object.entries(submittedIdsByGroup).reduce(
-                (acc, [key, ids]) => {
-                    acc[key] = metadataData.filter((entry) =>
-                        ids.includes(entry.token_id)
-                    );
-                    return acc;
-                },
-                {}
-            );
 
             // Cache the data
             setCachedSets((prevSets) => {
