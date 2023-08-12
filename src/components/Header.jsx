@@ -1,4 +1,12 @@
-import { Box, Typography, FormGroup, FormControlLabel, Switch, TextField } from "@mui/material";
+import {
+    Box,
+    Typography,
+    FormGroup,
+    FormControlLabel,
+    Switch,
+    TextField,
+    Button,
+} from "@mui/material";
 import { useEffect } from "react";
 import styled from "@emotion/styled";
 import logoLight from "../assets/img/logo_light1.png";
@@ -11,91 +19,114 @@ import { useNavigate } from "react-router-dom";
 import debounce from "lodash.debounce";
 
 const HeaderContainer = styled(Box)`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
 `;
 
 const LogoContainer = styled(Box)`
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 `;
 
 const LogoImage = styled("img")`
-  width: 32px;
-  height: auto;
-  margin-right: 8px;
+    width: 32px;
+    height: auto;
+    margin-right: 8px;
 `;
 
 const ButtonContainer = styled(Box)`
-  display: flex;
-  align-items: center;
+    display: flex;
+    align-items: center;
 `;
 
 const RoundedTextField = styled(TextField)`
-  border-radius: 24px;
-  .MuiOutlinedInput-root {
     border-radius: 24px;
-    padding-right: 8px;
-  }
-  .MuiInputLabel-outlined {
-    transform: translateY(7px);
-  }
-  .MuiOutlinedInput-input {
-    padding: 10px 14px;
-  }
+    .MuiOutlinedInput-root {
+        border-radius: 24px;
+        padding-right: 8px;
+    }
+    .MuiInputLabel-outlined {
+        transform: translateY(7px);
+    }
+    .MuiOutlinedInput-input {
+        padding: 10px 14px;
+    }
 `;
 
-function Header({ isDarkTheme, changeTheme, address, updateAddress, setNumber }) {
-  const logo = isDarkTheme ? logoDark : logoLight;
-  const logoL = isDarkTheme ? logoDarkL : logoLightL;
-  const [inputAddress, setInputAddress] = useState(address);
-  const navigate = useNavigate();
+function Header({
+    isDarkTheme,
+    changeTheme,
+    address,
+    updateAddress,
+    setNumber,
+}) {
+    const logo = isDarkTheme ? logoDark : logoLight;
+    const logoL = isDarkTheme ? logoDarkL : logoLightL;
+    const [inputAddress, setInputAddress] = useState(address);
+    const navigate = useNavigate();
 
-  useEffect(() => {
-    setInputAddress(address);
-  }, [address]);
+    useEffect(() => {
+        setInputAddress(address);
+    }, [address]);
 
-  const debouncedUpdateAddress = debounce((inputAddress) => {
-    updateAddress(inputAddress);
-    if(inputAddress === "") {
-      navigate(`sets/${setNumber}`);
-    } else {
-      navigate(`/${inputAddress}/sets/${setNumber}`);
-    }
-  }, 500);
+    const debouncedUpdateAddress = debounce((inputAddress) => {
+        updateAddress(inputAddress);
+        if (inputAddress === "") {
+            navigate(`sets/${setNumber}`);
+        } else {
+            navigate(`/${inputAddress}/sets/${setNumber}`);
+        }
+    }, 500);
 
-  const handleAddressChange = (e) => {
-    setInputAddress(e.target.value);
-    debouncedUpdateAddress(e.target.value);
-  };
+    const handleAddressChange = (e) => {
+        setInputAddress(e.target.value);
+        debouncedUpdateAddress(e.target.value);
+    };
 
-  return (
-    <HeaderContainer>
-      <LogoContainer>
-        <LogoImage src={cl} alt="Logo" />
-        <Typography variant="h6">Opepening</Typography>
-      </LogoContainer>
-      <ButtonContainer>
-        <Box marginRight={2}>
-          <RoundedTextField
-            variant="outlined"
-            value={inputAddress}
-            onChange={handleAddressChange}
-            InputLabelProps={{ shrink: false }}
-            placeholder="Enter your address"
-          />
-        </Box>
-        {/* <FormGroup>
+    return (
+        <HeaderContainer>
+            <LogoContainer>
+                <LogoImage src={cl} alt="Logo" />
+                <Typography variant="h6">Opepening</Typography>
+            </LogoContainer>
+            <ButtonContainer>
+                <a
+                    href="https://opepen.accountant/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    <Button
+                        variant="outlined"
+                        style={{
+                            backgroundColor: "transparent",
+                            color: "white",
+                            boxShadow: "none",
+                            borderColor: "gray",
+                        }}
+                    >
+                        Odds
+                    </Button>
+                </a>
+                <Box marginRight={2} marginLeft={2}>
+                    <RoundedTextField
+                        variant="outlined"
+                        value={inputAddress}
+                        onChange={handleAddressChange}
+                        InputLabelProps={{ shrink: false }}
+                        placeholder="Enter your address"
+                    />
+                </Box>
+                {/* <FormGroup>
           <FormControlLabel
             control={<Switch checked={isDarkTheme} onChange={changeTheme} />}
             label="Dark Theme"
           />
         </FormGroup> */}
-      </ButtonContainer>
-    </HeaderContainer>
-  );
+            </ButtonContainer>
+        </HeaderContainer>
+    );
 }
 
 export default Header;
