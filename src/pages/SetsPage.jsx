@@ -10,6 +10,7 @@ import {
     CardContent,
     CardMedia,
     Grid,
+    Box,
     Typography,
     Dialog,
     DialogTitle,
@@ -21,7 +22,11 @@ import {
 
 const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
     const [setName, setSetName] = useState("");
-    const { cachedSets, setCachedSets, address:contextAddress } = useCachedSets();
+    const {
+        cachedSets,
+        setCachedSets,
+        address: contextAddress,
+    } = useCachedSets();
     const [opepenIds, setOpepenIds] = useState([]);
     const [submittedOpepenCount, setSubmittedOpepenCount] = useState({});
     const [images, setImages] = useState({});
@@ -31,20 +36,22 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
     const [revealedMetadata, setRevealedMetadata] = useState([]);
     const imageCache = useRef({});
     const [submittedCount, setSubmittedCount] = useState(0);
-    const [previousAddress, setPreviousAddress] = useState('');
+    const [previousAddress, setPreviousAddress] = useState("");
     const [showAddressModal, setShowAddressModal] = useState(false);
     const [inputAddress, setInputAddress] = useState("");
     const [isPackRevealed, setIsPackRevealed] = useState(false);
     const [imageLoading, setImageLoading] = useState(true);
     const [dataLoading, setDataLoading] = useState(true);
+    const [countdown, setCountdown] = useState("");
+    const [revealsAt, setRevealsAt] = useState("");
+    const [revealedBlockNumber, setRevealedBlockNumber] = useState(null);
 
     const handleOpenModal = (set, key, submittedCount) => {
         if (!address) {
             setShowAddressModal(true);
         } else {
-            const revealed = cachedSets[setNumber]?.revealedMetadata?.[key] || [];
-            console.log(revealed);
-            console.log(key);
+            const revealed =
+                cachedSets[setNumber]?.revealedMetadata?.[key] || [];
             setRevealedMetadata(revealed);
             setOpenModal(true);
             setSubmittedCount(submittedCount);
@@ -74,8 +81,50 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
             resetCachedSets();
         }
     }, [contextAddress, address]);
-        
 
+    useEffect(() => {
+        const revealTime = new Date(revealsAt);
+        let timer;
+
+        const updateTimer = () => {
+            const now = new Date();
+            const timeDifference = revealTime - now;
+
+            if (timeDifference > 0) {
+                const hours = Math.floor(timeDifference / (1000 * 60 * 60));
+                const minutes = Math.floor(
+                    (timeDifference % (1000 * 60 * 60)) / (1000 * 60)
+                );
+                const seconds = Math.floor(
+                    (timeDifference % (1000 * 60)) / 1000
+                );
+
+                setCountdown(`${hours}h ${minutes}m ${seconds}s until reveal`);
+            } else {
+                if (revealedBlockNumber !== null) {
+                    if (isPackRevealed) {
+                        setCountdown(
+                            `Reveal Block Number: ${revealedBlockNumber}`
+                        );
+                    } else {
+                        setCountdown(
+                            `Sumbitted at Block Number: ${revealedBlockNumber}. Waiting on metadata to propagate... \n(refresh your page)`
+                        );
+                    }
+                    clearInterval(timer);
+                } else {
+                    setCountdown("Reveal will happen shortly");
+                }
+            }
+        };
+
+        // Start the timer
+        updateTimer();
+        timer = setInterval(updateTimer, 1000);
+
+        // Clear the timer on component unmount
+        return () => clearInterval(timer);
+    }, [revealsAt, revealedBlockNumber, isPackRevealed]);
 
     useEffect(() => {
         const fetchSetNameAndOpepenIds = async () => {
@@ -84,7 +133,11 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
             );
             const setNameData = await setNameResponse.json();
             const setName = setNameData.name;
+            const revealsAt = setNameData.reveals_at;
+            const revealedBlockNumber = setNameData.reveal_block_number;
             setSetName(setName);
+            setRevealsAt(revealsAt);
+            setRevealedBlockNumber(revealedBlockNumber);
 
             const images = {
                 1: setNameData.edition1Image,
@@ -95,7 +148,6 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
                 40: setNameData.edition40Image,
             };
             setImages(images);
-
 
             /*
             demand = {
@@ -111,7 +163,6 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
             // This is total amount submitted from everyone
             const demand = setNameData.submission_stats.demand;
 
-
             let opepenIdsResponse = null;
             if (address) {
                 opepenIdsResponse = await fetch(
@@ -120,14 +171,21 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
             }
 
             let opepenIds = []; // This is a list of opepen ids submitted
-            let max_reveals = {"1":0, "4":0, "5":0, "10":0, "20":0, "40":0, "total":0}; // This is the maximum amount they can receive per set {"set_number": int_amount}
+            let max_reveals = {
+                1: 0,
+                4: 0,
+                5: 0,
+                10: 0,
+                20: 0,
+                40: 0,
+                total: 0,
+            }; // This is the maximum amount they can receive per set {"set_number": int_amount}
             if (opepenIdsResponse && opepenIdsResponse.ok) {
                 const opepenIdsData = await opepenIdsResponse.json();
                 opepenIds = opepenIdsData.opepen_ids;
                 max_reveals = opepenIdsData.max_reveals;
             }
             setOpepenIds(opepenIds);
-            
 
             const submittedOpepenCount = Object.entries(demand).reduce(
                 (acc, [key, value]) => {
@@ -142,37 +200,38 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
                 {}
             );
 
-
             const metadataResponse = await fetch(
                 `https://api.opepen.art/v1/opepen/sets/${setNumber}/opepen`
             );
             const metadataData = await metadataResponse.json();
-            setIsPackRevealed(metadataData.length > 0);
-            
+            const isPackRevealed = metadataData.length > 0;
+            setIsPackRevealed(isPackRevealed);
+
             let metadataByGroup = {};
-            metadataData.forEach(item => {
+            metadataData.forEach((item) => {
                 if (opepenIds.includes(item.token_id)) {
                     if (!metadataByGroup[item.data.edition]) {
                         metadataByGroup[item.data.edition] = [];
                     }
                     metadataByGroup[item.data.edition].push(item);
                 }
-            })
-
+            });
 
             // Cache the data
             setCachedSets((prevSets) => {
                 const shouldResetRevealedMetadata =
                     prevSets[setNumber]?.address !== contextAddress;
-            
+
                 return {
                     ...prevSets,
                     [setNumber]: {
                         setName,
+                        revealsAt,
+                        revealedBlockNumber,
                         opepenIds,
                         submittedOpepenCount,
                         images,
-                        isPackRevealed: metadataData.length > 0,
+                        isPackRevealed,
                         revealedMetadata: shouldResetRevealedMetadata
                             ? metadataByGroup
                             : {
@@ -187,20 +246,26 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
             setSubmittedOpepenCount(submittedOpepenCount);
         };
 
-        const shouldRefetchData =
-        !cachedSets[setNumber] || cachedSets[setNumber]?.address !== contextAddress;
+        const revealTime = new Date(revealsAt);
+        let timer;
 
-    if (shouldRefetchData) {
-        fetchSetNameAndOpepenIds().then(() => setDataLoading(false));
-    } else {
-        // Use the cached data
-        setSetName(cachedSets[setNumber].setName);
-        setOpepenIds(cachedSets[setNumber].opepenIds);
-        setSubmittedOpepenCount(cachedSets[setNumber].submittedOpepenCount);
-        setImages(cachedSets[setNumber].images);
-        setIsPackRevealed(cachedSets[setNumber].isPackRevealed);
-        setDataLoading(false);
-    }
+        const shouldRefetchData =
+            !cachedSets[setNumber] ||
+            cachedSets[setNumber]?.address !== contextAddress;
+
+        if (shouldRefetchData) {
+            fetchSetNameAndOpepenIds().then(() => setDataLoading(false));
+        } else {
+            // Use the cached data
+            setSetName(cachedSets[setNumber].setName);
+            setRevealsAt(cachedSets[setNumber].revealsAt);
+            setRevealedBlockNumber(cachedSets[setNumber].revealedBlockNumber);
+            setOpepenIds(cachedSets[setNumber].opepenIds);
+            setSubmittedOpepenCount(cachedSets[setNumber].submittedOpepenCount);
+            setImages(cachedSets[setNumber].images);
+            setIsPackRevealed(cachedSets[setNumber].isPackRevealed);
+            setDataLoading(false);
+        }
     }, [setNumber, contextAddress]);
 
     const LoadingCard = () => (
@@ -236,6 +301,11 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
                 setName={setName}
                 updateSetNumber={updateSetNumber}
             />
+            <Box marginBottom={2} marginTop={2}>
+            <Typography variant="h6" align="center">
+                {dataLoading ? " " : countdown}
+            </Typography>
+            </Box>
             <Grid container justifyContent="center" spacing={2}>
                 {dataLoading
                     ? Array.from({ length: 6 }, (_, i) => (
@@ -326,6 +396,7 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
                     </Button>
                 </DialogActions>
             </Dialog>
+            
         </div>
     );
 };
