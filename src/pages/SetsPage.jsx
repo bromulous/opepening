@@ -113,7 +113,11 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
                     }
                     clearInterval(timer);
                 } else {
-                    setCountdown("Reveal will happen shortly");
+                    if (revealsAt === null) {
+                        setCountdown("Set not yet announced");
+                    } else {
+                        setCountdown("Reveal will happen shortly");
+                    }
                 }
             }
         };
@@ -203,7 +207,10 @@ const SetsPage = ({ address, onAddressSubmit, setNumber, updateSetNumber }) => {
             const metadataResponse = await fetch(
                 `https://api.opepen.art/v1/opepen/sets/${setNumber}/opepen`
             );
-            const metadataData = await metadataResponse.json();
+            let metadataData = [];
+            if (metadataResponse.ok) {
+                metadataData = await metadataResponse.json();
+            }
             const isPackRevealed = metadataData.length > 0;
             setIsPackRevealed(isPackRevealed);
 
